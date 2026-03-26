@@ -7,6 +7,11 @@ This fork adds support for Firefox, auto detected dark mode, and adds Bitbucket 
 
 **Firefox**: https://github.com/nathandaven/mermaid-previewer/releases/download/1.5.2/firefox-mv3-prod.xpi
 
+<img width="1172" height="734" alt="Screenshot 2026-03-26 at 12 26 38 PM" src="https://github.com/user-attachments/assets/2c8027b1-23e7-4dd9-bfc0-d6cb2784d768" />
+
+Here's a repo where you can test the extension: https://bitbucket.org/marcozaccari2/markdown-diagrams-browser-extension/src/master/doc/examples/mermaid.md
+
+
 --- 
 
 # Mermaid Previewer (forked)
