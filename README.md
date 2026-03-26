@@ -1,9 +1,11 @@
-# Mermaid Previewer
 
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/zephyraft/mermaid-previewer)](https://github.com/zephyraft/mermaid-previewer/releases)
-[![GitHub package.json dependency version (prod)](https://img.shields.io/github/package-json/dependency-version/zephyraft/mermaid-previewer/mermaid)](https://github.com/mermaid-js/mermaid)
-[![Chrome Web Store](https://img.shields.io/chrome-web-store/v/oidjnlhbegipkcklbdfnbkikplpghfdl)](https://chrome.google.com/webstore/detail/mermaid-previewer/oidjnlhbegipkcklbdfnbkikplpghfdl)
-[![Chrome Web Store](https://img.shields.io/chrome-web-store/users/oidjnlhbegipkcklbdfnbkikplpghfdl)](https://chrome.google.com/webstore/detail/mermaid-previewer/oidjnlhbegipkcklbdfnbkikplpghfdl)
+# What is this fork? 
+
+This fork adds support for Firefox, auto detected dark mode, and adds Bitbucket Pull Requests to the default settings with support for it.
+
+--- 
+
+# Mermaid Previewer (forked)
 
 A chrome extension for previewing and exporting mermaid images in web pages, fully rendering mermaid locally without involving remote api calls.
 
