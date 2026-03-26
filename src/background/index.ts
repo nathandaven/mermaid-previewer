@@ -1,8 +1,11 @@
 import { action, runtime, scripting, type Tabs } from "webextension-polyfill";
 import previewerJsUrl from "url:~/previewer.ts";
 import downloaderJsUrl from "url:~/downloader.ts";
+import mermaidBridgeJsUrl from "url:~/mermaid-bridge.ts";
 import fontawesomeCssUrl from "url:~/resources/fontawesome.css";
 import { getDownloadSelectorList, getExcludeURL, getMatchSelectorList, watchStorage } from "~core/options";
+
+const isFirefox = !!(globalThis as any).browser;
 
 const actionOnClicked = (_: Tabs.Tab) => {
   (async () => {
@@ -25,6 +28,14 @@ watchStorage(async () => {
   await registerContentScripts();
 });
 
+function getJsFilename(url: string): string {
+  return url.substring(url.lastIndexOf("/") + 1, url.lastIndexOf(".")) + ".js";
+}
+
+function getCssFilename(url: string): string {
+  return url.substring(url.lastIndexOf("/") + 1, url.lastIndexOf(".")) + ".css";
+}
+
 async function registerContentScripts() {
   const excludeConfigs = await getExcludeURL();
   const matchSelectors = await getMatchSelectorList();
@@ -36,15 +47,43 @@ async function registerContentScripts() {
 
   console.log(excludeMatches, matches, downloadMatches);
 
-  await scripting.registerContentScripts([
-    {
-      id: "mermaid",
-      allFrames: true,
-      excludeMatches,
-      matches,
-      js: ["mermaid.min.js"]
-    }
-  ]);
+  if (isFirefox) {
+    // Firefox: inject mermaid + bridge into MAIN world (Function() is blocked in ISOLATED world)
+    await scripting.registerContentScripts([
+      {
+        id: "mermaid",
+        allFrames: true,
+        excludeMatches,
+        matches,
+        js: ["mermaid.min.js"],
+        world: "MAIN",
+        runAt: "document_start",
+      }
+    ]);
+
+    await scripting.registerContentScripts([
+      {
+        id: "mermaid-bridge",
+        allFrames: true,
+        excludeMatches,
+        matches,
+        js: [getJsFilename(mermaidBridgeJsUrl)],
+        world: "MAIN",
+        runAt: "document_start",
+      }
+    ]);
+  } else {
+    // Chrome: inject mermaid into ISOLATED world (same as previewer)
+    await scripting.registerContentScripts([
+      {
+        id: "mermaid",
+        allFrames: true,
+        excludeMatches,
+        matches,
+        js: ["mermaid.min.js"]
+      }
+    ]);
+  }
 
   await scripting.registerContentScripts([
     {
@@ -52,8 +91,8 @@ async function registerContentScripts() {
       allFrames: true,
       excludeMatches,
       matches,
-      js: [previewerJsUrl.substring(previewerJsUrl.lastIndexOf("/") + 1, previewerJsUrl.lastIndexOf(".")) + ".js"],
-      css: [fontawesomeCssUrl.substring(fontawesomeCssUrl.lastIndexOf("/") + 1, fontawesomeCssUrl.lastIndexOf(".")) + ".css"]
+      js: [getJsFilename(previewerJsUrl)],
+      css: [getCssFilename(fontawesomeCssUrl)]
     }
   ]);
 
@@ -63,7 +102,7 @@ async function registerContentScripts() {
       allFrames: true,
       excludeMatches,
       matches: downloadMatches,
-      js: [downloaderJsUrl.substring(downloaderJsUrl.lastIndexOf("/") + 1, downloaderJsUrl.lastIndexOf(".")) + ".js"],
+      js: [getJsFilename(downloaderJsUrl)],
     }
   ]);
 }

@@ -9,6 +9,8 @@ import type { Mermaid } from "mermaid";
  */
 export const rawDataKey: string = "data-mermaid-previewer-raw";
 
+const RENDER_ATTR = "data-mermaid-previewer-pending";
+
 /**
  * mermaid图表正则匹配
  */
@@ -56,22 +58,57 @@ export const queryAndSaveRaw = async (
 };
 
 /**
+ * Check if we're running in Firefox (where mermaid must run in MAIN world)
+ */
+const isFirefox = typeof navigator !== "undefined" && navigator.userAgent.includes("Firefox");
+
+let renderCounter = 0;
+
+const detectTheme = (): string =>
+  window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "default";
+
+/**
+ * Render via MAIN world bridge (for Firefox)
+ */
+const renderViaBridge = async (
+  domList: HTMLElement[],
+  securityLevel: string,
+): Promise<void> => {
+  const renderId = String(++renderCounter);
+  domList.forEach((el) => el.setAttribute(RENDER_ATTR, renderId));
+
+  return new Promise<void>((resolve) => {
+    const handler = (e: MessageEvent) => {
+      if (e.source === window && e.data?.type === "mermaid-previewer-rendered" && e.data?.renderId === renderId) {
+        window.removeEventListener("message", handler);
+        resolve();
+      }
+    };
+    window.addEventListener("message", handler);
+    window.postMessage({ type: "mermaid-previewer-render", securityLevel, renderId, theme: detectTheme() }, "*");
+  });
+};
+
+/**
  * 渲染mermaid图
  */
 export const render = async (
-  mermaid: Mermaid,
+  mermaid: Mermaid | null,
   domList: HTMLElement[],
 ): Promise<void> => {
-  mermaid.initialize({
-    securityLevel: (await enableSandbox()) ? "sandbox" : "strict",
-    startOnLoad: false,
-  });
-  try {
-    await mermaid.run({
-      nodes: domList,
-    });
-  } catch (e) {
-    console.error(e);
+  const securityLevel = (await enableSandbox()) ? "sandbox" : "strict";
+
+  if (isFirefox) {
+    await renderViaBridge(domList, securityLevel);
+  } else {
+    const theme = detectTheme();
+    mermaid!.initialize({ securityLevel, startOnLoad: false, theme });
+    try {
+      await mermaid!.run({ nodes: domList });
+    } catch (e) {
+      console.error(e);
+    }
   }
+
   await mermaidHover(domList, false);
 };

@@ -55,7 +55,26 @@ export const queryContainers = async (
   const mermaidDomList = dom.querySelectorAll<HTMLElement>(selectors);
   mermaidDomList.forEach((mermaidDom) => {
     // 去除内部多余的html tag，主要是为了兼容bitbucket
-    const mermaidText = mermaidDom.innerText;
+    // Bitbucket PR code blocks have line numbers via CSS ::before on .ds-line-number spans.
+    // Skip those spans and extract text only from code content children.
+    const rows = mermaidDom.querySelectorAll("[data-ds--code--row]");
+    let mermaidText: string;
+    if (rows.length > 0) {
+      mermaidText = Array.from(rows).map((r) => {
+        let line = "";
+        r.childNodes.forEach((child) => {
+          // Skip line number elements (have class containing "linenumber" or "line-number")
+          if (child instanceof HTMLElement &&
+              (child.classList.contains("ds-line-number") ||
+               child.classList.contains("linenumber") ||
+               child.hasAttribute("data-ds--line-number"))) return;
+          line += child.textContent || "";
+        });
+        return line;
+      }).join("");
+    } else {
+      mermaidText = mermaidDom.innerText;
+    }
     // 防止Dom based XSS
     mermaidDom.innerHTML = "";
     mermaidDom.textContent = mermaidText;

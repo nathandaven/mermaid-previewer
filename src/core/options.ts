@@ -1,4 +1,8 @@
-import { Storage, type StorageCallbackMap, type StorageWatchCallback } from "@plasmohq/storage";
+import {
+  Storage,
+  type StorageCallbackMap,
+  type StorageWatchCallback,
+} from "@plasmohq/storage";
 
 import type { ExcludeConfig, Experimental, SelectorConfig } from "~types";
 
@@ -14,8 +18,8 @@ export const storageKey = {
 
 export const defaultExcludes: ExcludeConfig[] = [
   {
-    match: "https://chromewebstore.google.com/*"
-  }
+    match: "https://chromewebstore.google.com/*",
+  },
 ];
 
 export const defaultMatchSelectors: SelectorConfig[] = [
@@ -31,6 +35,10 @@ export const defaultMatchSelectors: SelectorConfig[] = [
     match: "file:///*.mermaid",
     selector: "body > pre",
   },
+  {
+    match: "*://bitbucket.org/*",
+    selector: "#pull-request-description-panel [data-ds--code--code-block] > code",
+  },
 ];
 
 export const defaultDownloadSelectors: SelectorConfig[] = [
@@ -41,7 +49,7 @@ export const defaultDownloadSelectors: SelectorConfig[] = [
   {
     match: "https://gitlab.com/-/sandbox/mermaid",
     selector: "div#app",
-  }
+  },
 ];
 
 /**
@@ -84,10 +92,10 @@ export const enableSandbox = async (): Promise<boolean> => {
 };
 
 export const watchStorage = (callback: StorageWatchCallback) => {
-  const callbackMap: StorageCallbackMap = {}
+  const callbackMap: StorageCallbackMap = {};
   for (let key in storageKey) {
     callbackMap[storageKey[key]] = callback;
     console.log("watching", storageKey[key]);
   }
   storage.watch(callbackMap);
-}
+};
