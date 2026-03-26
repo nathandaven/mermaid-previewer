@@ -3,6 +3,9 @@
 
 This fork adds support for Firefox, auto detected dark mode, and adds Bitbucket Pull Requests to the default settings with support for it.
 
+Chrome: https://github.com/nathandaven/mermaid-previewer/releases/download/1.5.2/chrome-mv3-prod.crx
+Firefox: https://github.com/nathandaven/mermaid-previewer/releases/download/1.5.2/firefox-mv3-prod.xpi
+
 --- 
 
 # Mermaid Previewer (forked)
