@@ -2,6 +2,8 @@ import {
   bundleIcon,
   DrinkCoffeeFilled,
   DrinkCoffeeRegular,
+  MapFilled,
+  MapRegular,
   SettingsFilled,
   SettingsRegular,
 } from "@fluentui/react-icons";
@@ -12,6 +14,7 @@ import Settings from "../pages/Settings";
 
 const SettingsIcon = bundleIcon(SettingsFilled, SettingsRegular);
 const DrinkCoffeeIcon = bundleIcon(DrinkCoffeeFilled, DrinkCoffeeRegular);
+const MapIcon = bundleIcon(MapFilled, MapRegular);
 
 interface Route {
   key: string;
@@ -32,10 +35,10 @@ export const routes: Record<string, Route> = {
     icon: <SettingsIcon />,
     page: <Settings />,
   },
-  Coffee: {
-    key: "Coffee",
-    title: "Buy me a coffee",
-    icon: <DrinkCoffeeIcon />,
+  Original: {
+    key: "Map",
+    title: "Original extension",
+    icon: <MapIcon />,
     page: <Coffee />,
   },
 };

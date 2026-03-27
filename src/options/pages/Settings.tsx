@@ -12,6 +12,7 @@ import React from "react";
 import { useStorage } from "@plasmohq/storage/hook";
 
 import {
+  defaultDiffSelectors,
   defaultDownloadSelectors,
   defaultExcludes,
   defaultMatchSelectors,
@@ -21,7 +22,9 @@ import ExcludeConfigTable from "~options/components/ExcludeConfig/ExcludeConfigT
 import ExcludeConfigToolbar from "~options/components/ExcludeConfig/ExcludeConfigToolbar";
 import SelectorConfigTable from "~options/components/SelectorConfig/SelectorConfigTable";
 import SelectorConfigToolbar from "~options/components/SelectorConfig/SelectorConfigToolbar";
-import type { ExcludeConfig, Experimental, SelectorConfig } from "~types";
+import DiffConfigTable from "~options/components/DiffConfig/DiffConfigTable";
+import DiffConfigToolbar from "~options/components/DiffConfig/DiffConfigToolbar";
+import type { DiffConfig, ExcludeConfig, Experimental, SelectorConfig } from "~types";
 import { OpenRegular } from "@fluentui/react-icons";
 
 export default () => {
@@ -36,6 +39,10 @@ export default () => {
   const [customDownloadSelectors, setCustomDownloadSelectors] = useStorage<
     SelectorConfig[]
   >(storageKey.downloadSelectors, []);
+
+  const [customDiffSelectors, setCustomDiffSelectors] = useStorage<
+    DiffConfig[]
+  >(storageKey.diffSelectors, []);
 
   const [experimental, setExperimental] = useStorage<Experimental>(
     storageKey.experimental,
@@ -118,6 +125,26 @@ export default () => {
           setCustomConfigs={setCustomDownloadSelectors}
         />
       </div>
+      <div className={"flex pt-10"}>
+        <Subtitle2 className={"flex-grow leading-10 pl-2"}>
+          <InfoLabel
+            size="large"
+            info="Diff selectors configure how mermaid diagrams are extracted from git diff views. The extension scans diff lines for fenced mermaid code blocks and renders them inline.">
+            Diff Selectors
+          </InfoLabel>
+        </Subtitle2>
+        <DiffConfigToolbar
+          title={"Add Diff Selector"}
+          setCustomConfigs={setCustomDiffSelectors}
+        />
+      </div>
+      <div>
+        <DiffConfigTable
+          defaultConfigs={defaultDiffSelectors}
+          customConfigs={customDiffSelectors}
+          setCustomConfigs={setCustomDiffSelectors}
+        />
+      </div>
       <div className={"mt-8"}>
         <Accordion collapsible>
           <AccordionItem value="1">
@@ -127,6 +154,7 @@ export default () => {
                 checked={experimental.sandbox}
                 onChange={async (ev) => {
                   await setExperimental({
+                    ...experimental,
                     sandbox: ev.currentTarget.checked,
                   });
                 }}

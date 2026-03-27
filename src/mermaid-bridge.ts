@@ -11,7 +11,10 @@ window.addEventListener("message", (e: MessageEvent) => {
   if (e.data?.type === "mermaid-previewer-render") {
     const { securityLevel, renderId, theme } = e.data;
     const mermaid = (window as any).mermaid;
-    if (!mermaid) return;
+    if (!mermaid) {
+      window.postMessage({ type: "mermaid-previewer-rendered", renderId }, "*");
+      return;
+    }
 
     const nodes = Array.from(document.querySelectorAll<HTMLElement>(`[${RENDER_ATTR}="${renderId}"]`));
     if (nodes.length === 0) {

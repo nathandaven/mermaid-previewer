@@ -4,7 +4,7 @@ import {
   type StorageWatchCallback,
 } from "@plasmohq/storage";
 
-import type { ExcludeConfig, Experimental, SelectorConfig } from "~types";
+import type { DiffConfig, ExcludeConfig, Experimental, SelectorConfig } from "~types";
 
 const storage = new Storage();
 const storageKeyPrefix = "mermaid-previewer.";
@@ -13,6 +13,7 @@ export const storageKey = {
   excludeURLs: `${storageKeyPrefix}excludeURLs`,
   matchSelectors: `${storageKeyPrefix}matchSelectors`,
   downloadSelectors: `${storageKeyPrefix}downloadSelectors`,
+  diffSelectors: `${storageKeyPrefix}diffSelectors`,
   experimental: `${storageKeyPrefix}experimental`,
 };
 
@@ -49,6 +50,15 @@ export const defaultDownloadSelectors: SelectorConfig[] = [
   {
     match: "https://gitlab.com/-/sandbox/mermaid",
     selector: "div#app",
+  },
+];
+
+export const defaultDiffSelectors: DiffConfig[] = [
+  {
+    match: "*://bitbucket.org/*/pull-requests/*",
+    diffSelector: ".bitkit-diff-wrapper-diff",
+    codeSelector: ".code-diff",
+    fence: "```mermaid",
   },
 ];
 
@@ -89,6 +99,12 @@ export const enableSandbox = async (): Promise<boolean> => {
     Experimental | undefined
   >(storageKey.experimental);
   return experimental ? experimental.sandbox : false;
+};
+
+export const getDiffSelectorList = async (): Promise<DiffConfig[]> => {
+  const custom =
+    (await storage.get<DiffConfig[] | undefined>(storageKey.diffSelectors)) ?? [];
+  return custom.concat(defaultDiffSelectors);
 };
 
 export const watchStorage = (callback: StorageWatchCallback) => {

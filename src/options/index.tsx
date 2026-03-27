@@ -14,13 +14,13 @@ function OptionsIndex() {
   return (
     <FluentProvider theme={webLightTheme}>
       <div className="flex flex-col relative z-10">
-        <Header />
-        <div className="flex h-[calc(100vh-4rem)]">
-          <RouteContext.Provider value={{ route, setRoute }}>
-            <Sidebar />
+        <RouteContext.Provider value={{ route, setRoute }}>
+          <Header />
+          <div className="flex h-[calc(100vh-4rem)]">
+            {/*<Sidebar />*/}
             <div className="flex-grow p-3">{route.page}</div>
-          </RouteContext.Provider>
-        </div>
+          </div>
+        </RouteContext.Provider>
       </div>
     </FluentProvider>
   );

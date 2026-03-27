@@ -28,8 +28,8 @@ export const mermaidHover = async (
   forDownloadSelector: boolean,
 ) => {
   domList
-    .map((dom) => dom.firstElementChild)
-    .filter((dom: HTMLElement) => !watchDomList.includes(dom))
+    .map((dom) => dom.firstElementChild as HTMLElement)
+    .filter((dom) => dom != null && !watchDomList.includes(dom))
     .forEach((svg: HTMLElement) => {
       watchDomList.push(svg);
       const exporterContainer = getExporterContainer();

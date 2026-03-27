@@ -10,3 +10,10 @@ export interface SelectorConfig {
 export interface Experimental {
   sandbox: boolean;
 }
+
+export interface DiffConfig {
+  match: string;
+  diffSelector: string;
+  codeSelector: string;
+  fence: string;
+}

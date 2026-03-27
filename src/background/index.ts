@@ -1,30 +1,44 @@
-import { action, runtime, scripting, type Tabs } from "webextension-polyfill";
+import { action, runtime, scripting, downloads, type Tabs } from "webextension-polyfill";
 import previewerJsUrl from "url:~/previewer.ts";
 import downloaderJsUrl from "url:~/downloader.ts";
 import mermaidBridgeJsUrl from "url:~/mermaid-bridge.ts";
 import fontawesomeCssUrl from "url:~/resources/fontawesome.css";
 import { getDownloadSelectorList, getExcludeURL, getMatchSelectorList, watchStorage } from "~core/options";
 
-const isFirefox = !!(globalThis as any).browser;
-
 const actionOnClicked = (_: Tabs.Tab) => {
   (async () => {
-    // 打开配置页
     await runtime.openOptionsPage();
   })();
 };
 
 if (!action.onClicked.hasListener(actionOnClicked)) {
-  // 扩展图标点击事件
   action.onClicked.addListener(actionOnClicked);
 }
 
-registerContentScripts().then(_ => {});
+// Handle download messages directly
+runtime.onMessage.addListener((message) => {
+  if (message?.name === "download" && message?.body) {
+    const { url, filename } = message.body;
+    // Firefox blocks data: URLs in downloads.download, convert to blob
+    if (url.startsWith("data:") && typeof URL.createObjectURL === "function") {
+      return fetch(url)
+        .then((r) => r.blob())
+        .then((blob) => URL.createObjectURL(blob))
+        .then((blobUrl) => downloads.download({ filename, url: blobUrl }))
+        .then(() => ({ message: "success" }));
+    }
+    return downloads.download({ filename, url }).then(() => ({ message: "success" }));
+  }
+});
 
-// 编程式动态声明
+registerContentScripts().catch((e) => {
+  unregisterAllDynamicContentScripts()
+    .then(() => registerContentScripts())
+    .catch((e2) => console.error("Failed to register content scripts:", e2));
+});
+
 watchStorage(async () => {
   await unregisterAllDynamicContentScripts();
-
   await registerContentScripts();
 });
 
@@ -47,43 +61,30 @@ async function registerContentScripts() {
 
   console.log(excludeMatches, matches, downloadMatches);
 
-  if (isFirefox) {
-    // Firefox: inject mermaid + bridge into MAIN world (Function() is blocked in ISOLATED world)
-    await scripting.registerContentScripts([
-      {
-        id: "mermaid",
-        allFrames: true,
-        excludeMatches,
-        matches,
-        js: ["mermaid.min.js"],
-        world: "MAIN",
-        runAt: "document_start",
-      }
-    ]);
+  // Inject mermaid + bridge into MAIN world for both Chrome and Firefox
+  await scripting.registerContentScripts([
+    {
+      id: "mermaid",
+      allFrames: true,
+      excludeMatches,
+      matches,
+      js: ["mermaid.min.js"],
+      world: "MAIN",
+      runAt: "document_start",
+    }
+  ]);
 
-    await scripting.registerContentScripts([
-      {
-        id: "mermaid-bridge",
-        allFrames: true,
-        excludeMatches,
-        matches,
-        js: [getJsFilename(mermaidBridgeJsUrl)],
-        world: "MAIN",
-        runAt: "document_start",
-      }
-    ]);
-  } else {
-    // Chrome: inject mermaid into ISOLATED world (same as previewer)
-    await scripting.registerContentScripts([
-      {
-        id: "mermaid",
-        allFrames: true,
-        excludeMatches,
-        matches,
-        js: ["mermaid.min.js"]
-      }
-    ]);
-  }
+  await scripting.registerContentScripts([
+    {
+      id: "mermaid-bridge",
+      allFrames: true,
+      excludeMatches,
+      matches,
+      js: [getJsFilename(mermaidBridgeJsUrl)],
+      world: "MAIN",
+      runAt: "document_start",
+    }
+  ]);
 
   await scripting.registerContentScripts([
     {

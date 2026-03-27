@@ -2,18 +2,23 @@ import {
   Body1,
   Button,
   Link,
+  Tab,
   Title3,
   Tooltip,
 } from "@fluentui/react-components";
-import React from "react";
+import React, { useState } from "react";
 
 import * as packageJson from "../../../package.json";
 import Github from "../icons/Github";
+import Sidebar from "~options/components/Sidebar";
+import { routes, RouteContext } from "~options/routes/routes";
 
 const version = packageJson.version;
 export default (): JSX.Element => {
   const [githubIconRef, setGithubIconRef] =
     React.useState<HTMLSpanElement | null>(null);
+
+  const [route, setRoute] = useState(routes.Settings);
 
   return (
     <div className="flex items-center h-16 px-6 border-b border-gray-30">
@@ -24,7 +29,7 @@ export default (): JSX.Element => {
             target="_blank"
             appearance="subtle"
             className="font-semibold hover:no-underline">
-            Mermaid Previewer
+            Mermaid Previewer (fork)
           </Link>
         </Title3>
         <Body1 className="-mb-3.5">
@@ -38,9 +43,27 @@ export default (): JSX.Element => {
             </Link>
           </Tooltip>
         </Body1>
+        <Sidebar />
       </div>
       <Tooltip
-        content="GitHub"
+        content="GitHub Fork"
+        relationship="label"
+        withArrow
+        positioning={{ target: githubIconRef }}>
+        <Button
+          icon={{
+            ref: setGithubIconRef,
+            children: <Github />,
+          }}
+          as="a"
+          href="https://www.github.com/nathandaven/mermaid-previewer"
+          target="_blank"
+          appearance="transparent"
+          size="large"
+        />
+      </Tooltip>
+      <Tooltip
+        content="GitHub Original"
         relationship="label"
         withArrow
         positioning={{ target: githubIconRef }}>

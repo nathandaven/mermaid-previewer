@@ -15,7 +15,7 @@ export default (): JSX.Element => (
       <CardPreview className="w-48 h-48">
         <Image src={buyMeACoffeeQRCode} />
       </CardPreview>
-      <CardFooter className="pt-4">
+      <CardFooter className="pt-4 gap-4">
         <Button
           icon={<OpenRegular fontSize={16} />}
           as="a"
@@ -23,7 +23,16 @@ export default (): JSX.Element => (
           target="_blank"
           appearance="primary"
           className="w-48">
-          buy me a coffee
+          buy original dev a coffee
+        </Button>
+        <Button
+          icon={<OpenRegular fontSize={16} />}
+          as="a"
+          href="https://chromewebstore.google.com/detail/mermaid-previewer/oidjnlhbegipkcklbdfnbkikplpghfdl"
+          target="_blank"
+          appearance="primary"
+          className="w-48">
+          original extension
         </Button>
       </CardFooter>
     </div>

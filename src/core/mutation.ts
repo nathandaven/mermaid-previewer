@@ -1,5 +1,6 @@
 import { queryAndSaveRaw, rawDataKey, render } from "./render";
 import { HadRenderedKey, queryContainers, renderedSelector } from "./selectors";
+import { extractDiffMermaidBlocks } from "./diff";
 import { type Mermaid } from "mermaid";
 
 let mermaidPreviewerMutationObserver: MutationObserver | undefined = undefined;
@@ -50,6 +51,12 @@ const mermaidPreviewerMutationCallback = async (
       const mermaidDomList = await queryAndSaveRaw(node);
       if (mermaidDomList.length !== 0) {
         await render(mermaid, mermaidDomList);
+      }
+
+      // Check for mermaid blocks in diff views
+      const diffBlocks = await extractDiffMermaidBlocks(node);
+      if (diffBlocks.length > 0) {
+        await render(mermaid, diffBlocks);
       }
     }
 

@@ -12,10 +12,9 @@ export default (): JSX.Element => {
   const { route, setRoute } = React.useContext(RouteContext);
 
   return (
-    <div className="flex-none w-60 px-1 py-3 border-r border-gray-30">
+    <div className="flex-none w-60 px-1 py-3">
       <TabList
         defaultSelectedValue={route.key}
-        vertical
         onTabSelect={(event: SelectTabEvent, data: SelectTabData) => {
           setRoute(routes[data.value as string]);
         }}>
