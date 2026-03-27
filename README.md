@@ -14,9 +14,9 @@ At the same time, it also provides the function of custom rule configuration.
 
 This fork adds support for Firefox, auto detected dark mode, and adds Bitbucket Pull Requests to the default settings with support for it.
 
-**Chrome**: https://github.com/nathandaven/mermaid-previewer/releases/download/1.5.2/chrome-mv3-prod.zip
+**Chrome**: https://github.com/nathandaven/mermaid-previewer/releases/download/1.5.4/chrome-mv3-prod.zip
 
-**Firefox**: https://github.com/nathandaven/mermaid-previewer/releases/download/1.5.2/firefox-mv3-prod.xpi
+**Firefox**: https://github.com/nathandaven/mermaid-previewer/releases/download/1.5.4/firefox-mv3-prod.xpi
 
 <img width="1172" height="734" alt="Screenshot 2026-03-26 at 12 26 38 PM" src="https://github.com/user-attachments/assets/2c8027b1-23e7-4dd9-bfc0-d6cb2784d768" />
 
