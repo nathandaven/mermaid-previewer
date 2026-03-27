@@ -1,0 +1,16 @@
+{
+  "summary": {
+    "en-US": "Preview and export mermaid."
+  },
+  "categories": ["other"],
+  "version": {
+    "license": "MIT"
+  },
+  "requires_payment": false,
+  "homepage": {
+    "en-US": "https://github.com/nathandaven/mermaid-previewer"
+  },
+  "support_email": {
+    "en-US": "nathandaven@gmail.com"
+  }
+}

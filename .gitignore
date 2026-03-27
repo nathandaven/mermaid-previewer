@@ -52,3 +52,7 @@ key.json
 /playwright/.cache/
 /playwright/.auth/
 /playwright/.download/
+
+*.xpi
+*.crx
+*.zip
